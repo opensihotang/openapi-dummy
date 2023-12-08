@@ -1,8 +1,8 @@
 const sql = require("mssql");
 const config = {
   server: "localhost",
-  user: process.env.USER,
-  password: process.env.PASSWORD,
+  user: process.env.DBUSER,
+  password: process.env.DBPASSWORD,
   database: "test",
   port: +process.env.DBPORT,
   pool: {

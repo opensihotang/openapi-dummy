@@ -1,4 +1,4 @@
-const Db = require("../dboperations");
+const Db = require("../models/dboperations");
 
 class Controller {
   static async getProduct(req, res) {
