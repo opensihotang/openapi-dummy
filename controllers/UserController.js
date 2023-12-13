@@ -6,7 +6,7 @@ class UserController {
     try {
       const { userName, email, password } = req.body;
       const newUser = await Db.registerUser(req.body);
-      res.status(201).json(newUser);
+      res.status(201).json("Register Sukses");
     } catch (error) {
       console.log(error);
     }
