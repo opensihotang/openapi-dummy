@@ -1,6 +1,7 @@
 const config = require("../config/DbConnection");
 const sql = require("mssql");
 const { hashPassword, comparePassword } = require("../helpers/bcrypt");
+const { v4: uuidv4 } = require("uuid");
 
 async function getOrders() {
   try {
@@ -17,8 +18,8 @@ async function getOrder(productId) {
     let pool = await sql.connect(config);
     let product = await pool
       .request()
-      .input("input_parameter", sql.Int, productId)
-      .query("SELECT * from Orders where Id = @input_parameter");
+      .input("id", sql.NVarChar, productId)
+      .query("SELECT * from Orders where Id = @id");
     if (product.recordset.length === 0) {
       throw new Error(`Product with id : ${productId} not found`);
     } else {
@@ -35,16 +36,15 @@ async function addOrder(order) {
     let pool = await sql.connect(config);
     let insertOrder = await pool
       .request()
-      .input("id", sql.Int, order.id)
+      .input("id", sql.NVarChar, uuidv4())
       .input("name", sql.NVarChar, order.name)
       .input("quantity", sql.Int, order.quantity)
       .input("message", sql.NVarChar, order.message)
       .input("city", sql.NVarChar, order.city).query(`
-                INSERT INTO Orders (id, name, quantity, message, city)
-                VALUES (@id, @name, @quantity, @message, @city);
+                INSERT INTO Orders (id, name, quantity, message, city, createdAt, updatedAt)
+                VALUES (@id, @name, @quantity, @message, @city, GETDATE(), GETDATE());
             `);
-    // console.log(insertOrder, ">>>>>>>>>>>>");
-    return insertOrder.recordsets;
+    return order;
   } catch (err) {
     console.log(err);
   }
@@ -77,14 +77,14 @@ async function registerUser(user) {
     let pool = await sql.connect(config);
     let register = await pool
       .request()
-      .input("id", sql.Int, user.id)
+      .input("objectId", sql.NVarChar, uuidv4())
       .input("username", sql.NVarChar, user.username)
       .input("email", sql.NVarChar, user.email)
       .input("password", sql.NVarChar, hashPassword(user.password))
       .query(
-        `INSERT into Users (id, username, email, password) VALUES (@id, @username, @email, @password)`
+        `INSERT into Users (objectId, username, email, password, createdAt, updatedAt) VALUES (@objectId, @username, @email, @password,GETDATE(),GETDATE())`
       );
-    console.log(register);
+    // console.log(register);
     return register;
   } catch (error) {
     console.log(error);

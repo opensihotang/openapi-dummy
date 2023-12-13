@@ -7,7 +7,7 @@ const authentication = require("../middleware/authentication");
 router.get("/", (req, res) => {
   res.send("Server Connected");
 });
-router.post("/users", userController.registerUser);
+router.post("/register", userController.registerUser);
 router.post("/login", userController.handleLogin);
 
 router.use(authentication);

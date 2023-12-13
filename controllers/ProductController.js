@@ -21,12 +21,11 @@ class ProductController {
 
   static async addProduct(req, res) {
     try {
-      const { id, name, quantity, message, city } = req.body;
+      const { name, quantity, message, city } = req.body;
       // console.log(req.body);
-      const newData = await Db.addOrder({ id, name, quantity, message, city });
-      const newOrder = await Db.getOrder(id);
-      //   console.log(newOrder);
-      res.status(201).json(newOrder[0]);
+      const newData = await Db.addOrder({ name, quantity, message, city });
+      // const newOrder = await Db.getOrder(newData.id);
+      res.status(201).json(newData);
     } catch (error) {
       console.log(error);
     }
