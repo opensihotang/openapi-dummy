@@ -1,5 +1,6 @@
 const config = require("../config/DbConnection");
 const sql = require("mssql");
+const { hashPassword, comparePassword } = require("../helpers/bcrypt");
 
 async function getOrders() {
   try {
@@ -70,9 +71,57 @@ async function deleteOrder(productId) {
     // console.log(err);
   }
 }
+
+async function registerUser(user) {
+  try {
+    let pool = await sql.connect(config);
+    let register = await pool
+      .request()
+      .input("id", sql.Int, user.id)
+      .input("username", sql.NVarChar, user.username)
+      .input("email", sql.NVarChar, user.email)
+      .input("password", sql.NVarChar, hashPassword(user.password))
+      .query(
+        `INSERT into Users (id, username, email, password) VALUES (@id, @username, @email, @password)`
+      );
+    console.log(register);
+    return register;
+  } catch (error) {
+    console.log(error);
+  }
+}
+async function loginUser(user) {
+  try {
+    let pool = await sql.connect(config);
+    const findUser = await pool
+      .request()
+      .input("email", sql.NVarChar, user.email)
+      .query(`select * from Users where email = @email`);
+
+    console.log(findUser.recordset);
+    if (findUser.recordset.length === 0) {
+      throw new Error("Invalid Login");
+    }
+
+    const invalidPassword = comparePassword(
+      user.password,
+      findUser.recordset[0].password
+    );
+    if (!invalidPassword) {
+      throw new Error("Invalid Login");
+    }
+
+    return findUser.recordset[0];
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
 module.exports = {
   getOrders: getOrders,
   getOrder: getOrder,
   addOrder: addOrder,
   deleteOrder: deleteOrder,
+  registerUser: registerUser,
+  loginUser: loginUser,
 };

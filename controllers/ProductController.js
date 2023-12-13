@@ -1,6 +1,6 @@
 const Db = require("../models/dboperations");
 
-class Controller {
+class ProductController {
   static async getProduct(req, res) {
     const data = await Db.getOrders();
     // console.log(data);
@@ -43,4 +43,4 @@ class Controller {
   }
 }
 
-module.exports = Controller;
+module.exports = ProductController;
