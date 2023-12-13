@@ -110,10 +110,24 @@ async function loginUser(user) {
     if (!invalidPassword) {
       throw new Error("Invalid Login");
     }
-
     return findUser.recordset[0];
   } catch (error) {
     console.log(error);
+    throw error;
+  }
+}
+
+async function getUserLogin(user) {
+  // console.log(user, "ini dbo");
+  try {
+    let pool = await sql.connect(config);
+    const findUser = await pool
+      .request()
+      .input("email", sql.NVarChar, user)
+      .query(`select * from Users where email = @email`);
+    // console.log(findUser, "finduser");
+    return findUser.recordset[0];
+  } catch (error) {
     throw error;
   }
 }
@@ -124,4 +138,5 @@ module.exports = {
   deleteOrder: deleteOrder,
   registerUser: registerUser,
   loginUser: loginUser,
+  getUserLogin: getUserLogin,
 };
