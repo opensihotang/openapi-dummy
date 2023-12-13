@@ -17,11 +17,11 @@ class UserController {
       const { email, password } = req.body;
       const loginUser = await Db.loginUser(req.body);
       //   console.log(loginUser, ">>>>>>>kskskdks");
-      const accesstoken = signToken({
+      const access_token = signToken({
         username: loginUser.username,
         email: loginUser.email,
       });
-      res.status(200).json(accesstoken);
+      res.status(200).json(access_token);
     } catch (error) {
       console.log(error);
       res.status(500).json(error.message);
