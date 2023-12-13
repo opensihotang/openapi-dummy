@@ -18,8 +18,8 @@ async function getOrder(productId) {
     let pool = await sql.connect(config);
     let product = await pool
       .request()
-      .input("input_parameter", sql.Int, productId)
-      .query("SELECT * from Orders where Id = @input_parameter");
+      .input("id", sql.NVarChar, productId)
+      .query("SELECT * from Orders where Id = @id");
     if (product.recordset.length === 0) {
       throw new Error(`Product with id : ${productId} not found`);
     } else {
@@ -42,10 +42,9 @@ async function addOrder(order) {
       .input("message", sql.NVarChar, order.message)
       .input("city", sql.NVarChar, order.city).query(`
                 INSERT INTO Orders (id, name, quantity, message, city, createdAt, updatedAt)
-                VALUES (@id, @name, @quantity, @message, @city, getdate(), GETDATE(), GETDATE());
+                VALUES (@id, @name, @quantity, @message, @city, GETDATE(), GETDATE());
             `);
-    // console.log(insertOrder, ">>>>>>>>>>>>");
-    return insertOrder.recordsets;
+    return order;
   } catch (err) {
     console.log(err);
   }
